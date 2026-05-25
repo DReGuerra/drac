@@ -49,4 +49,3 @@ def-kevbot_cpu                     0.000000      0.000000        inf
  def-kevbot_cpu         aguerra    1.000000      0.000000        inf
 ```
 The share score and its effect on your queue time has two aspects: (1) it uses the account's total usage compared to other accounts, and (2) it uses your share score compared to your group members. From the return, you can see each user's individual score (LevelFS) and the score for the whole group. This can give you insight into how long you will queue relative to all users in the cluster and relative to your group members. There is an interesting page on competing group members on the [DRAC documentation](https://docs.alliancecan.ca/wiki/Managing_Slurm_accounts) - coordination between group members can significantly improve work throughput within the group.
-
