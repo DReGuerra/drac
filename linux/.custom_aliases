@@ -1,0 +1,23 @@
+# custom aliases for cluster
+# Andre Guerra
+
+# movement
+alias l='ls -lha --color=auto'
+alias h='cd ~/ && l'
+alias e='exit'
+alias c='clear'
+alias s='cd ~/scratch && l'
+alias u='cd .. && l'
+alias uu='cd ../.. && l'
+alias uuu='cd ../../.. && l'
+
+# rsync - pull everything from scratch to projects storage
+alias scratch2projects='rsync -ah --delete --info=progress2 --stats --timeout=120 ~/scratch/ ~/projects/def-fzadeh/aguerra/scratch_mirror/'
+
+# Scheduler
+# individual squeue
+alias q="squeue --user=$USER --Format=username:.10,name:.20,jobid:.10,account:.15,numcpus:.6,minmemory:.12,state:.12,timelimit:.12,timeused:.12,reason:.10"
+# group's squeue
+alias qq="squeue --account=def-kevbot_cpu,def-fzadeh_cpu --Format=username:.10,name:.20,jobid:.10,account:.15,numcpus:.6,minmemory:.12,state:.12,timelimit:.12,timeused:.12,reason:.10"
+# fairshare score
+alias share="sshare --accounts=def-kevbot_cpu,def-fzadeh_cpu -a -v --format=Account,User,NormShares,EffectvUsage,LevelFS"
