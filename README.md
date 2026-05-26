@@ -77,4 +77,69 @@ def-kevbot_cpu                     0.000000      0.000000        inf
 The share score and its effect on your queue time has two aspects: (1) it uses the account's total usage compared to other accounts, and (2) it uses your share score compared to your group members. From the return, you can see each user's individual score (LevelFS) and the score for the whole group. This can give you insight into how long you will queue relative to all users in the cluster and relative to your group members. There is an interesting page on competing group members on the [DRAC documentation](https://docs.alliancecan.ca/wiki/Managing_Slurm_accounts) - coordination between group members can significantly improve work throughput within the group.
 
 ## Hardware Architecture
+Below are some examples of Slurm `$SBATCH` commands to be included at the header of job submission bash scripts to instruct Slurm on how to best allocate resources depending on the use case.
 
+### Core requests
+#### MPI and OpenMP threaded combined acceleration
+Most computational software have MPI and OpenMP combined acceleration available, so this allocation request allows the maximal efficiency given the hardware architecture of [Fir](https://docs.alliancecan.ca/wiki/Fir) nodes. This enables the software to use cores available in NUMA nodes (`--ntasks-per-node=24`) for MPI ranks and cores in CCDs (`--cpus-per-task=8`) for threading.
+```
+#!/bin/bash
+#SBATCH --account=def-kevbot                            # account name
+#SBATCH --nodes=1                                       # X server node
+#SBATCH --ntasks-per-node=24                            # X MPI ranks (cores per NUMA node)
+#SBATCH --cpus-per-task=8                               # number of threads per rank (cores per CCD)
+#SBATCH --mem=0                                         # memory per node
+#SBATCH --time=00-00:05:00                              # days-hh:mm:ss
+#SBATCH --job-name=Au22KCK16                            # Name of the job
+#SBATCH --output=slurm_%A_tddft_Au22KCK16.out           # output file
+#SBATCH --error=slurm_%A_tddft_Au22KCK16.err            # error file
+```
+
+#### MPI only
+```
+#!/bin/bash
+(...)
+#SBATCH --ntasks-per-node=192                           # X MPI ranks (cores per NUMA node)
+#SBATCH --cpus-per-task=1                               # number of threads per rank (cores per CCD)
+```
+
+#### OpenMP threading only
+In this case, we want to launch one MPI rank and use multiple cores for threading the 1 rank/task. For optimal usage, the number of cores that you request should be multiples of the number of cores available in a CCD chiplet based on the compute node architecture (see DRAC documentation for specifications on [Fir](https://docs.alliancecan.ca/wiki/Fir), [Rorqual](https://docs.alliancecan.ca/wiki/Rorqual), etc.) The "catch" here is that cores in a CCD share L3 memory, which makes it efficient for them to thread a task/rank within that CCD, but requesting for more multiples of the number of cores (more CCDs) may have a diminishing return in efficiency due to memory latency loss accross CCDs. In other words, more CCDs does not necessarily mean faster execution of the rank/task.
+```
+#!/bin/bash
+(...)
+#SBATCH --ntasks-per-node=1                             # X MPI ranks
+#SBATCH --cpus-per-task=8                               # number of threads per rank (cores per CCD)
+```
+
+### GPU requests
+#### One single NVIDIA H100
+```
+#!/bin/bash
+#SBATCH --account=def-kevbot                            # account name
+#SBATCH --nodes=1                                       # X server node
+#SBATCH --ntasks-per-node=4                             # X MPI ranks (cores per NUMA node)
+#SBATCH --cpus-per-task=12                              # number of threads per rank (cores per CCD)
+#SBATCH --mem=0                                         # memory per node
+#SBATCH --gpus=h100:1                                   # request 1 H100 GPU
+#SBATCH --time=00-00:05:00                              # days-hh:mm:ss
+#SBATCH --job-name=Au22KCK16                            # Name of the job
+#SBATCH --output=slurm_%A_tddft_Au22KCK16.out           # output file
+#SBATCH --error=slurm_%A_tddft_Au22KCK16.err            # error file
+```
+
+#### Multiple NVIDIA H100 in one node
+In this case the flag `--gpus-per-node` indicates how many H100s you are requestion on the same node; in this example, it requests 3, but you can request up to 4 based on the [hardware configureations of Fir nodes](https://docs.alliancecan.ca/wiki/Fir).
+```
+#!/bin/bash
+(...)
+#SBATCH --gpus-per-node=h100:3                          # request 3 H100 GPUs
+```
+
+#### Multiple NVIDIA H100 across nodes
+In this case, replace `n` with the number of GPUs you are requesting.
+```
+#!/bin/bash
+(...)
+#SBATCH --gpus=h100:n                                   # request n
+```
