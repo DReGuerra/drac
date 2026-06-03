@@ -6,7 +6,7 @@ May, 2026<br>
 a[dot]guerra[at]queensu[dot]ca<br>
 
 ## Objectives
-The goal of this repository is to server as a reference guide and on-ramp resource for people learning to use the HPC resources available from the Digital Research Alliance of Canada (DRAC). More experienced users may also find some more advanced topics helpful and a source of sample scripts. The official documentation for DRAC can be found at: [https://docs.alliancecan.ca/wiki/Technical_documentation](https://docs.alliancecan.ca/wiki/Technical_documentation). This repository will not be an exhaustive reference, for that the reader should refer to the official DRAC documentation. Instead, this repository will clarify some important aspects and introduce workflows through some sample scripts. The reader can use and modify these scripts for their own workflows.
+The goal of this repository is to serve as a reference guide and on-ramp resource for people learning to use the HPC resources available from the Digital Research Alliance of Canada (DRAC). More experienced users may also find some more advanced topics helpful and a source of sample custom scripts. The official documentation for DRAC can be found at: [https://docs.alliancecan.ca/wiki/Technical_documentation](https://docs.alliancecan.ca/wiki/Technical_documentation). This repository will NOT be an exhaustive reference, for that the reader should refer to the official DRAC documentation. Instead, this repository will clarify some important aspects and introduce workflows through sample scripts. The reader can modify and use these scripts for their own workflows.
 
 ## Linux
 ### Custom aliases
@@ -30,7 +30,7 @@ Which outputs:
        Project (def-username-ab)       4096 B/9536 GB              2/500k
           Project (def-username)       4096 B/9536 GB              2/500k
 ```
-Scratch storage is the fastest amd should be used for data generation during a compute job. This storage is intended to be temporary for data generation only - in fact, DRAC conducts periodic purges of data in these drives. So, it is your responsibility to transfer data from completed jobs to longer-term storage (e.g., Project), or for archiving (e.g., Nearline).
+Scratch storage is the fastest and should be used for data generation during a compute job. This storage is intended to be temporary for data generation only - in fact, DRAC conducts periodic purges of data in these drives. So, it is your responsibility to transfer data from completed jobs to longer-term storage (e.g., Project), or for archiving (e.g., Nearline).
 
 ## Slurm
 [Slurm](https://en.wikipedia.org/wiki/Slurm_Workload_Manager) is a job scheduler for Linux clusters that DRAC uses for resources management. DRAC clusters have a lot of hardware available to a lot of researchers. Submitting jobs to Slurm creates a virtual queue to organize the allocation of CPUs, memory, and GPUs available to users. DRAC's documentation on [running jobs](https://docs.alliancecan.ca/wiki/Running_jobs) explains several aspects of submitting jobs using Slurm.
@@ -43,6 +43,34 @@ squeue --user=$USER --Format=username:.10,name:.20,jobid:.10,account:.15,numcpus
 This command asks for the queued jobs of all users in the accounts specified, and it also formats the output as the command above.
 ```
 squeue --account=def-kevbot_cpu,def-fzadeh_cpu --Format=username:.10,name:.20,jobid:.10,account:.15,numcpus:.6,minmemory:.12,state:.12,timelimit:.12,timeused:.12,reason:.10
+```
+
+#### Example
+This is a sample output specifying a random account in Fir.
+```
+squeue --account=rrg-rjliao_gpu --Format=username:.10,name:.25,jobid:.10,account:.15,numnodes:.6,numcpus:.6,gres:.6,minmemory:.12,state:.12,timelimit:.12,timeus
+ed:.12,reason:.10
+```
+Output:
+```
+      USER                     NAME     JOBID        ACCOUNT NODES  CPUS  TRES_PER_NODE  MIN_MEMORY       STATE  TIME_LIMIT        TIME    REASON
+      qyan       tmp5rxlh55z.sbatch  30513177 rrg-rjliao_gpu     1    48gres/gpu:h100:4           0     PENDING  3-00:00:00        0:00  Priority
+      qyan       tmp92ckvn_b.sbatch  30513178 rrg-rjliao_gpu     1    48gres/gpu:h100:4           0     PENDING  3-00:00:00        0:00  Priority
+      qyan       tmpmblj3i6z.sbatch  30513179 rrg-rjliao_gpu     1    48gres/gpu:h100:4           0     PENDING  3-00:00:00        0:00  Priority
+    felix8       tmprah1egiw.sbatch  30825026 rrg-rjliao_gpu     1    48gres/gpu:h100:4           0     PENDING  4-00:00:00        0:00  Priority
+      qyan       tmphldz77i8.sbatch  32786552 rrg-rjliao_gpu     1    48gres/gpu:h100:4           0     PENDING  5-00:00:00        0:00  Priority
+      qyan       tmp65h2jznp.sbatch  32786553 rrg-rjliao_gpu     1    48gres/gpu:h100:4           0     PENDING  5-00:00:00        0:00  Priority
+      qyan       tmpp7t8x0c7.sbatch  32786554 rrg-rjliao_gpu     1    48gres/gpu:h100:4           0     PENDING  5-00:00:00        0:00  Priority
+      qyan       tmpuve9_6ig.sbatch  32786555 rrg-rjliao_gpu     1    48gres/gpu:h100:4           0     PENDING  5-00:00:00        0:00  Priority
+  muchenli   helper-5ps8_1rs.sbatch  42228294 rrg-rjliao_gpu     1    48gres/gpu:h100:4           0     PENDING  7-00:00:00        0:00  Priority
+   nickwzk   helper-k7_kkl0s.sbatch  36865313 rrg-rjliao_gpu     1    48gres/gpu:h100:4           0     PENDING  3-00:00:00        0:00Nodes requ
+   nickwzk   helper-ajda5o6b.sbatch  36886990 rrg-rjliao_gpu     1    48gres/gpu:h100:4           0     PENDING  3-00:00:00        0:00  Priority
+      qyan       tmpreazjfn0.sbatch  30513175 rrg-rjliao_gpu     1    48gres/gpu:h100:4           0     PENDING  3-00:00:00        0:00  Priority
+      qyan       tmpduwkv6kq.sbatch  30513176 rrg-rjliao_gpu     1    48gres/gpu:h100:4           0     PENDING  3-00:00:00        0:00  Priority
+   nickwzk   helper-ddwq6cb9.sbatch  36861787 rrg-rjliao_gpu     1    48gres/gpu:h100:4           0     PENDING  5-00:00:00        0:00  Priority
+   nickwzk   helper-bqsbr_9z.sbatch  36865300 rrg-rjliao_gpu     1    48gres/gpu:h100:4           0     PENDING  5-00:00:00        0:00  Priority
+  muchenli   helper-s6a21txm.sbatch  40446620 rrg-rjliao_gpu     1    48gres/gpu:h100:4           0     PENDING  7-00:00:00        0:00  Priority
+  muchenli   helper-imbqy03d.sbatch  40446648 rrg-rjliao_gpu     1    48gres/gpu:h100:4           0     PENDING  7-00:00:00        0:00  Priority
 ```
 
 ### Fair share score
